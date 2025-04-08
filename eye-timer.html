@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>护眼倒计时</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f0fff0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            text-align: center;
+        }
+        
+        .timer-container {
+            width: 100%;
+            max-width: 800px;
+        }
+        
+        #timer {
+            font-size: 25vw;
+            font-weight: bold;
+            color: #2e8b57;
+            margin: 20px 0;
+            line-height: 1;
+        }
+        
+        #status {
+            font-size: 2rem;
+            color: #228b22;
+            margin-bottom: 30px;
+            min-height: 3rem;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        button {
+            padding: 12px 24px;
+            font-size: 1.2rem;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        #startPause {
+            background-color: #3cb371;
+            color: white;
+        }
+        
+        #startPause:hover {
+            background-color: #2e8b57;
+        }
+        
+        #reset {
+            background-color: #f0f0f0;
+            color: #333;
+        }
+        
+        #reset:hover {
+            background-color: #ddd;
+        }
+        
+        .counter {
+            font-size: 1.2rem;
+            color: #228b22;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="timer-container">
+        <div id="status">准备开始护眼计划</div>
+        <div id="timer">20:00</div>
+        <div class="controls">
+            <button id="startPause">开始</button>
+            <button id="reset">重置</button>
+        </div>
+        <div class="counter">已完成循环: <span id="cycleCount">0</span> 次</div>
+    </div>
+
+    <script>
+        // 常量定义
+        const WORK_TIME = 20 ; // 20分钟（秒）
+        const BREAK_TIME = 20;     // 20秒
+        const WORK_MESSAGE = "正在用眼中~";
+        const BREAK_MESSAGE = "眼睛眺望远方，让眼睛休息一下~";
+        const READY_MESSAGE = "准备开始护眼计划";
+        
+        // DOM元素
+        const timerDisplay = document.getElementById('timer');
+        const statusDisplay = document.getElementById('status');
+        const startPauseBtn = document.getElementById('startPause');
+        const resetBtn = document.getElementById('reset');
+        const cycleCountDisplay = document.getElementById('cycleCount');
+        
+        // 变量
+        let timeLeft;
+        let isWorking = true;
+        let timerId;
+        let isRunning = false;
+        let cycleCount = 0;
+        
+        // 初始化
+        resetTimer();
+        
+        // 事件监听
+        startPauseBtn.addEventListener('click', toggleTimer);
+        resetBtn.addEventListener('click', resetTimer);
+        
+        // 切换计时器状态
+        function toggleTimer() {
+            if (isRunning) {
+                pauseTimer();
+                startPauseBtn.textContent = '继续';
+            } else {
+                startTimer();
+                startPauseBtn.textContent = '暂停';
+                // 开始计时后立即显示工作状态信息
+                if (isWorking) {
+                    statusDisplay.textContent = WORK_MESSAGE;
+                }
+            }
+        }
+        
+        // 开始计时
+        function startTimer() {
+            if (!isRunning) {
+                isRunning = true;
+                timerId = setInterval(updateTimer, 1000);
+            }
+        }
+        
+        // 暂停计时
+        function pauseTimer() {
+            clearInterval(timerId);
+            isRunning = false;
+        }
+        
+        // 重置计时器
+        function resetTimer() {
+            pauseTimer();
+            isWorking = true;
+            timeLeft = WORK_TIME;
+            updateDisplay();
+            statusDisplay.textContent = READY_MESSAGE;
+            startPauseBtn.textContent = '开始';
+            cycleCount = 0;
+            cycleCountDisplay.textContent = cycleCount;
+        }
+        
+        // 更新计时器
+        function updateTimer() {
+            timeLeft--;
+            
+            if (timeLeft <= 0) {
+                if (isWorking) {
+                    // 工作时间结束，切换到休息时间
+                    isWorking = false;
+                    timeLeft = BREAK_TIME;
+                    statusDisplay.textContent = BREAK_MESSAGE;
+                    cycleCount++;
+                    cycleCountDisplay.textContent = cycleCount;
+                } else {
+                    // 休息时间结束，切换回工作时间
+                    isWorking = true;
+                    timeLeft = WORK_TIME;
+                    statusDisplay.textContent = WORK_MESSAGE;
+                }
+            }
+            
+            updateDisplay();
+        }
+        
+        // 更新显示
+        function updateDisplay() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            
+            // 根据状态改变颜色
+            if (isWorking) {
+                timerDisplay.style.color = '#2e8b57';
+            } else {
+                timerDisplay.style.color = '#228b22';
+            }
+        }
+    </script>
+</body>
+</html>
