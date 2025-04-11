@@ -90,7 +90,7 @@
 
     <script>
         // 常量定义
-        const WORK_TIME = 20 ; // 20分钟（秒）
+        const WORK_TIME = 20 * 60 ; // 20分钟（秒）
         const BREAK_TIME = 20;     // 20秒
         const WORK_MESSAGE = "正在用眼中~";
         const BREAK_MESSAGE = "眼睛眺望远方，让眼睛休息一下~";
@@ -195,5 +195,9 @@
             }
         }
     </script>
+    <script>
+        window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+      </script>
+      <script defer src="/_vercel/insights/script.js"></script>
 </body>
 </html>
